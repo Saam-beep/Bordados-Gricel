@@ -1,0 +1,29 @@
+# Dependencias y compilación
+node_modules/
+dist/
+
+# Contraseñas y configuración privada
+.env
+.env.*
+!.env.example
+
+# Archivos de clientes
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Bases de datos locales
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.sqlite-*
+*.sqlite3-*
+
+# Respaldos
+*.bak
+*.dump
+backups/
+
+# Registros
+*.log
+.DS_Store

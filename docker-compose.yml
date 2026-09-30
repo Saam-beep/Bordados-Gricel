@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: bordados_gricel_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: gricel
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Define POSTGRES_PASSWORD en el archivo .env}
+      POSTGRES_DB: bordados_gricel
+    ports:
+      - "5432:5432"
+    volumes:
+      - gricel_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gricel -d bordados_gricel"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  gricel_pgdata:

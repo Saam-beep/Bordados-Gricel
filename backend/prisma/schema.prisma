@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CLIENT
+  ADMIN
+  SALES
+  PRODUCTION
+}
+
+enum OrderStatus {
+  RECEIVED
+  DESIGN_REVIEW
+  QUOTE_SENT
+  WAITING_APPROVAL
+  APPROVED
+  WAITING_DEPOSIT
+  IN_PRODUCTION
+  QUALITY_CONTROL
+  READY
+  DELIVERED
+  CANCELLED
+}
+
+enum ServiceType {
+  FLAT_EMBROIDERY
+  EMBROIDERY_3D
+  APPLIQUE_EMBROIDERY
+  PATCHES
+  SUBLIMATION
+  FULL_SUBLIMATION
+  GARMENT_MAKING
+  UNIFORMS
+  TSHIRTS
+  OTHER
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  name         String
+  email        String    @unique
+  passwordHash String
+  role         Role      @default(CLIENT)
+  phone        String?
+  whatsapp     String?
+  company      String?
+  nit          String?
+  address      String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  orders       Order[]
+}
+
+model Order {
+  id             Int          @id @default(autoincrement())
+  orderNumber    String       @unique
+  customerId     Int
+  customer       User         @relation(fields: [customerId], references: [id])
+  serviceType    ServiceType
+  product        String
+  quantity       Int
+  sizes          Json?
+  colors         String?
+  notes          String?
+  requestedDate  DateTime?
+  confirmedDate  DateTime?
+  status         OrderStatus  @default(RECEIVED)
+  subtotal       Decimal?     @db.Decimal(12, 2)
+  total          Decimal?     @db.Decimal(12, 2)
+  deposit        Decimal?     @db.Decimal(12, 2)
+  balance        Decimal?     @db.Decimal(12, 2)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  files          OrderFile[]
+  history        OrderHistory[]
+}
+
+model OrderFile {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  fileName  String
+  filePath  String
+  mimeType  String
+  createdAt DateTime @default(now())
+}
+
+model OrderHistory {
+  id        Int         @id @default(autoincrement())
+  orderId   Int
+  order     Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  status    OrderStatus
+  note      String?
+  createdAt DateTime    @default(now())
+}

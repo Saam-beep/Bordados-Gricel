@@ -1,0 +1,15 @@
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { api } from '../services/api';
+
+export function Login() {
+  const navigate = useNavigate(); const [error, setError] = useState(''); const [loading, setLoading] = useState(false);
+  async function submit(e) { e.preventDefault(); setLoading(true); setError(''); const form = Object.fromEntries(new FormData(e.currentTarget)); try { const { data } = await api.post('/auth/login', form); localStorage.setItem('gricel_token', data.token); localStorage.setItem('gricel_user', JSON.stringify(data.user)); navigate(data.user.role === 'CLIENT' ? '/portal' : '/admin'); } catch (err) { setError(err.response?.data?.message || 'No se pudo iniciar sesión'); } finally { setLoading(false); } }
+  return <section className="auth-wrap"><form className="form-card" onSubmit={submit}><span className="eyebrow">BIENVENIDO</span><h1>Iniciar sesión</h1><p>Consulta tus pedidos o entra al CRM administrativo.</p>{error && <div className="alert">{error}</div>}<label>Correo<input name="email" type="email" required /></label><label>Contraseña<input name="password" type="password" required /></label><button className="button" disabled={loading}>{loading ? 'Ingresando…' : 'Ingresar'}</button><small>¿Aún no tienes cuenta? <Link to="/registro">Regístrate aquí</Link></small></form></section>;
+}
+
+export function Register() {
+  const navigate = useNavigate(); const [error, setError] = useState(''); const [loading, setLoading] = useState(false);
+  async function submit(e) { e.preventDefault(); setLoading(true); setError(''); const raw = Object.fromEntries(new FormData(e.currentTarget)); const payload = Object.fromEntries(Object.entries(raw).filter(([,v]) => v !== '')); try { const { data } = await api.post('/auth/register', payload); localStorage.setItem('gricel_token', data.token); localStorage.setItem('gricel_user', JSON.stringify(data.user)); navigate('/portal'); } catch (err) { setError(err.response?.data?.message || 'No se pudo crear la cuenta'); } finally { setLoading(false); } }
+  return <section className="auth-wrap"><form className="form-card wide" onSubmit={submit}><span className="eyebrow">NUEVO CLIENTE</span><h1>Crea tu cuenta</h1><p>Guarda tus datos una vez y administra todos tus pedidos.</p>{error && <div className="alert">{error}</div>}<div className="form-grid"><label>Nombre completo<input name="name" required /></label><label>Empresa<input name="company" /></label><label>Correo<input name="email" type="email" required /></label><label>Teléfono<input name="phone" placeholder="+502 5555 5555" /></label><label>WhatsApp<input name="whatsapp" placeholder="+502 5555 5555" /></label><label>NIT<input name="nit" /></label><label className="span-2">Dirección<input name="address" /></label><label className="span-2">Contraseña<input name="password" type="password" minLength="8" required /></label></div><button className="button" disabled={loading}>{loading ? 'Creando…' : 'Crear mi cuenta'}</button></form></section>;
+}

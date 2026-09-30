@@ -1,0 +1,36 @@
+BORDADOS GRICEL CRM - INICIO RAPIDO
+===================================
+
+1) Desde la carpeta raiz:
+   docker compose up -d
+
+2) Terminal 1:
+   cd backend
+   copy .env.example .env
+   npm install
+   npx prisma generate
+   npx prisma migrate dev --name init
+   npm run prisma:seed
+   npm run dev
+
+3) Terminal 2:
+   cd frontend
+   copy .env.example .env
+   npm install
+   npm run dev
+
+4) Abrir:
+   http://localhost:5173
+
+ADMIN:
+   USUARIO
+   CONTRASEÑA
+
+POSTGRES:
+   host: localhost
+   port: 5432
+   db: bordados_gricel
+   user: USUARIO
+   password: CONTRASEÑA
+
+Más detalles: README.md
